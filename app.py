@@ -1,3 +1,4 @@
+import static_ffmpeg
 import streamlit as st
 import whisper
 import os
@@ -63,4 +64,5 @@ if uploaded_file is not None:
                 if os.path.exists("temp_audio.mp3"): os.remove("temp_audio.mp3")
 
                 import static_ffmpeg
+
 static_ffmpeg.add_paths() # Ye apne aap FFmpeg dhoond lega
