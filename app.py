@@ -1,4 +1,4 @@
-import static_ffmpeg
+
 import streamlit as st
 import whisper
 import os
@@ -65,4 +65,5 @@ if uploaded_file is not None:
 
                 import static_ffmpeg
 
-static_ffmpeg.add_paths() # Ye apne aap FFmpeg dhoond lega
+
+
