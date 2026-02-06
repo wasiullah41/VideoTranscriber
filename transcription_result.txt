@@ -1,0 +1,1 @@
+Processing use movie, pi-watt to convert the MP2. Video into a temporary MP3 on a file. AI transcription load the wasteware model, the base model, the good balance between speed and accuracy. And pass the audio file to the model transceiver function.
