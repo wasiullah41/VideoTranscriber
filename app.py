@@ -1,138 +1,142 @@
 import streamlit as st
 import whisper
 import os
+import base64
 
 # 1. Page Configuration
-st.set_page_config(page_title="Akib's AI Transcriber", page_icon="🪄", layout="wide")
+st.set_page_config(page_title="Wasiullah's AI Transcriber", page_icon="🪄", layout="wide")
 
-# Custom CSS for Professional UI & Image Styling
-st.markdown("""
+# Function to convert image to base64
+def get_base64_image(image_path):
+    if os.path.exists(image_path):
+        with open(image_path, "rb") as img_file:
+            return base64.b64encode(img_file.read()).decode()
+    return None
+
+# Custom CSS for UI, Circular Image and Contact Form
+img_base64 = get_base64_image("my_photo.jpg.png")
+
+st.markdown(f"""
     <style>
-    /* Glassmorphism Sidebar */
-    [data-testid="stSidebar"] {
+    [data-testid="stSidebar"] {{
         background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
         color: white;
-    }
+    }}
     
-    /* Profile Image Styling - Circular with Neon Glow */
-    .profile-container {
-        display: flex;
-        justify-content: center;
-        padding: 10px;
-    }
-    
-    .profile-img {
-        width: 160px;
-        height: 160px;
+    .circle-img {{
+        width: 150px;
+        height: 150px;
         border-radius: 50%;
         object-fit: cover;
         border: 4px solid #4ade80;
-        box-shadow: 0 0 25px rgba(74, 222, 128, 0.6);
-    }
+        box-shadow: 0 0 20px rgba(74, 222, 128, 0.6);
+        display: block;
+        margin: 20px auto;
+    }}
 
-    .neon-text {
+    .neon-text {{
         color: #4ade80;
         text-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
         font-weight: bold;
         text-align: center;
         font-size: 1.4em;
-        margin-top: 10px;
-    }
+    }}
 
-    .sidebar-card {
+    .sidebar-card {{
         background: rgba(255, 255, 255, 0.05);
         padding: 15px;
         border-radius: 12px;
         margin-bottom: 10px;
         border: 1px solid rgba(255, 255, 255, 0.1);
-    }
+    }}
 
-    /* Main UI Buttons */
-    .stButton>button {
+    /* Contact Form Styling */
+    input[type=text], input[type=email], textarea {{
         width: 100%;
-        border-radius: 12px;
-        height: 3.5em;
-        background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%);
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        box-sizing: border-box;
+        margin-top: 6px;
+        margin-bottom: 16px;
+    }}
+
+    button[type=submit] {{
+        background-color: #22c55e;
         color: white;
-        font-weight: bold;
+        padding: 12px 20px;
         border: none;
-        box-shadow: 0 4px 15px rgba(22, 163, 74, 0.3);
-        transition: 0.3s;
-    }
+        border-radius: 8px;
+        cursor: pointer;
+        width: 100%;
+        font-weight: bold;
+    }}
     </style>
     """, unsafe_allow_html=True)
 
-# 2. Sidebar with your Specific Photo Name
+# 2. Sidebar with Wasiullah's Branding
 with st.sidebar:
-    st.markdown('<p class="neon-text">AKIB AI HUB</p>', unsafe_allow_html=True)
+    st.markdown('<p class="neon-text">WASIULLAH AI HUB</p>', unsafe_allow_html=True)
     
-    # Updated logic for your specific file name
-    photo_path = "my_photo.jpg.png"
-    
-    if os.path.exists(photo_path):
-        # Image ko center karne ke liye columns ka use
-        col_img1, col_img2, col_img3 = st.columns([1, 4, 1])
-        with col_img2:
-            st.image(photo_path, use_container_width=True)
+    if img_base64:
+        st.markdown(f'<img src="data:image/png;base64,{img_base64}" class="circle-img">', unsafe_allow_html=True)
     else:
-        # Fallback agar file nahi milti
-        st.warning("Photo not found. Make sure 'my_photo.jpg.png' is in your GitHub repo.")
-        st.image("https://cdn-icons-png.flaticon.com/512/3135/3135715.png", width=100)
+        st.info("Photo 'my_photo.jpg.png' not found in repo.")
     
-    st.markdown("<h3 style='text-align: center; margin-bottom: 0;'>Akib</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align: center; margin-bottom: 0;'>Wasiullah</h3>", unsafe_allow_html=True)
     st.markdown("<p style='text-align: center; color: #94a3b8;'>B.Sc. IT Developer</p>", unsafe_allow_html=True)
     
     st.write("---")
-    
     st.markdown("""
     <div class="sidebar-card">
-        <p style='color: #4ade80; font-weight: bold; margin-bottom: 5px;'>🚀 Tool Stats</p>
-        <p style='font-size: 0.9em; margin: 0;'>• Engine: Whisper AI</p>
-        <p style='font-size: 0.9em; margin: 0;'>• Status: Online ✅</p>
-    </div>
-    <div class="sidebar-card">
-        <p style='color: #4ade80; font-weight: bold; margin-bottom: 5px;'>🛠️ Support</p>
-        <p style='font-size: 0.8em;'>Contact Akib for custom AI solutions.</p>
+        <p style='color: #4ade80; font-weight: bold; margin: 0;'>🚀 Status: Online</p>
+        <p style='font-size: 0.8em; color: #94a3b8;'>AI Engine: Whisper Tiny</p>
     </div>
     """, unsafe_allow_html=True)
 
 # 3. Main Interface
-st.markdown("<h1 style='text-align: center;'>🪄 Akib's AI Media Transcriber</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center;'>🪄 Wasiullah's AI Media Transcriber</h1>", unsafe_allow_html=True)
 
 col1, col2, col3 = st.columns([1, 2, 1])
 
 with col2:
-    st.write("")
-    uploaded_file = st.file_uploader("", type=["mp4", "mkv", "mov", "mp3", "wav", "m4a", "flac"])
+    uploaded_file = st.file_uploader("Upload Video or Audio", type=["mp4", "mp3", "wav", "m4a", "mov"])
 
-    if uploaded_file is not None:
+    if uploaded_file:
         file_ext = os.path.splitext(uploaded_file.name)[1]
-        temp_name = f"temp_input{file_ext}"
+        temp_name = f"temp_file{file_ext}"
 
-        with st.spinner('✨ Akib\'s AI is magic in progress...'):
+        with st.spinner('Wasiullah\'s AI is working...'):
             try:
                 with open(temp_name, "wb") as f:
                     f.write(uploaded_file.getbuffer())
                 
                 model = whisper.load_model("tiny")
-                result = model.transcribe(temp_name, fp16=False, task="transcribe")
+                result = model.transcribe(temp_name, fp16=False)
                 
                 st.balloons()
-                st.success(f"✅ Completed! Language: {result.get('language', 'unknown').upper()}")
-                
-                tab1, tab2 = st.tabs(["📄 Transcription", "ℹ️ File Info"])
-                with tab1:
-                    st.text_area("Result:", value=result["text"], height=300)
-                    st.download_button("📥 Download Result", data=result["text"], file_name=f"{uploaded_file.name}_by_Akib.txt")
-                with tab2:
-                    st.write(f"**Filename:** {uploaded_file.name}")
-                    st.write(f"**Model:** Whisper Tiny")
+                st.success("Transcription Completed!")
+                st.text_area("Result:", value=result["text"], height=300)
+                st.download_button("📥 Download Result", data=result["text"], file_name=f"{uploaded_file.name}_by_Wasiullah.txt")
             except Exception as e:
                 st.error(f"Error: {e}")
             finally:
                 if os.path.exists(temp_name): os.remove(temp_name)
-    else:
-        st.info("👋 Hello! Upload a file to start transcribing.")
+
+    # 4. Contact Form Section
+    st.write("---")
+    st.subheader("📬 Get In Touch with Wasiullah")
+    
+    contact_form = f"""
+    <form action="https://formsubmit.co/wasiullah9702@gmail.com" method="POST">
+        <input type="hidden" name="_subject" value="New Message from AI Transcriber!">
+        <input type="text" name="name" placeholder="Your Name" required>
+        <input type="email" name="email" placeholder="Your Email" required>
+        <textarea name="message" placeholder="Your Message Here..." required></textarea>
+        <button type="submit">Send Message</button>
+    </form>
+    """
+    st.markdown(contact_form, unsafe_allow_html=True)
 
 st.write("---")
-st.markdown("<p style='text-align: center; color: #94a3b8;'>© 2026 Akib Developer</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #94a3b8;'>© 2026 Designed & Developed by <b>Wasiullah</b></p>", unsafe_allow_html=True)
