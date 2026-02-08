@@ -1,62 +1,128 @@
 import streamlit as st
 import whisper
 import os
-import base64
 
-# Page configuration for a professional look
-st.set_page_config(page_title="AI Media Transcriber", page_icon="🎙️", layout="centered")
+# 1. Page Configuration
+st.set_page_config(page_title="Akib's AI Transcriber", page_icon="🎙️", layout="wide")
 
-st.title("🎙️ AI Audio & Video to Text Converter")
-st.markdown("Upload any media file to get a full text transcription instantly.")
-
-# Step 1 & 2: Supporting both Audio and Video formats
-uploaded_file = st.file_uploader("Upload Media (Video or Audio)", type=["mp4", "mkv", "mov", "mp3", "wav", "m4a", "flac"])
-
-if uploaded_file is not None:
-    # Step 3: Handling any File Name by saving it with a fixed internal name
-    # Isse user ki file name ka "locha" khatam ho jayega
-    file_extension = os.path.splitext(uploaded_file.name)[1]
-    temp_filename = f"temp_media_input{file_extension}"
-
-    try:
-        with st.status("Processing your file...", expanded=True) as status:
-            st.write("Uploading and saving file...")
-            with open(temp_filename, "wb") as f:
-                f.write(uploaded_file.getbuffer())
-            
-            # Step 1: Using 'tiny' model for maximum speed
-            st.write("Loading AI Model (Whisper Tiny)...")
-            model = whisper.load_model("tiny")
-            
-            st.write("Transcribing... This might take a moment depending on length.")
-            # Transcribing the full duration
-            result = model.transcribe(temp_filename, fp16=False)
-            
-            full_text = result["text"]
-            status.update(label="Transcription Completed!", state="complete", expanded=False)
-
-        # Displaying the Result in English
-        st.success("Success! Here is your transcription:")
-        st.text_area("Full Transcription:", value=full_text, height=300)
-
-        # Step 2: Download Button
-        st.download_button(
-            label="📥 Download Transcription as TXT",
-            data=full_text,
-            file_name=f"{os.path.splitext(uploaded_file.name)[0]}_transcription.txt",
-            mime="text/plain"
-        )
-
-    except Exception as e:
-        st.error(f"An error occurred: {e}")
+# Custom CSS for a Professional & Attractive UI
+st.markdown("""
+    <style>
+    /* Main background */
+    .stApp {
+        background: linear-gradient(to right, #f8f9fa, #e9ecef);
+    }
     
-    finally:
-        # Cleaning up temp files to save server memory
-        if os.path.exists(temp_filename):
-            os.remove(temp_filename)
+    /* Custom Button Styling */
+    .stButton>button {
+        width: 100%;
+        border-radius: 12px;
+        height: 3em;
+        background-color: #2e7d32;
+        color: white;
+        font-weight: bold;
+        border: none;
+        transition: 0.3s;
+    }
+    .stButton>button:hover {
+        background-color: #1b5e20;
+        transform: scale(1.02);
+    }
 
-else:
-    st.info("Please upload a file to start the transcription process.")
+    /* Text Area Styling */
+    .stTextArea>div>div>textarea {
+        border-radius: 15px;
+        border: 2px solid #2e7d32;
+        background-color: #ffffff;
+    }
 
-st.divider()
-st.caption("Powered by OpenAI Whisper • Built with Streamlit")
+    /* Success Message Styling */
+    .stSuccess {
+        background-color: #e8f5e9;
+        border: 1px solid #2e7d32;
+        border-radius: 10px;
+    }
+
+    /* Sidebar Styling */
+    [data-testid="stSidebar"] {
+        background-color: #1a1a1a;
+        color: white;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+# 2. Sidebar - Branding & Instructions
+with st.sidebar:
+    st.markdown(f"<h2 style='text-align: center; color: #4CAF50;'>Developer: Akib</h2>", unsafe_allow_html=True)
+    st.write("---")
+    st.info("🚀 **Tool Capabilities:**\n- Video & Audio Support\n- Fast AI Processing\n- Original Language Output\n- Instant Download")
+    st.write("---")
+    st.markdown("### 🛠️ Help")
+    st.write("Just upload your file and let the AI do the magic. For any issues, contact Akib.")
+
+# 3. Main Interface Header
+st.markdown("<h1 style='text-align: center; color: #1b5e20;'>🎙️ Akib's AI Media Transcriber</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; font-size: 1.2em;'>The smartest way to convert your Audio & Video to Text.</p>", unsafe_allow_html=True)
+
+# Layout: Center the Uploader
+col1, col2, col3 = st.columns([1, 2, 1])
+
+with col2:
+    st.write("---")
+    uploaded_file = st.file_uploader("Drop your video or audio here 👇", type=["mp4", "mkv", "mov", "mp3", "wav", "m4a", "flac"])
+
+    if uploaded_file is not None:
+        file_extension = os.path.splitext(uploaded_file.name)[1]
+        temp_filename = f"temp_media_input{file_extension}"
+
+        with st.spinner('✨ Akib\'s AI is processing your media...'):
+            try:
+                # Saving uploaded file
+                with open(temp_filename, "wb") as f:
+                    f.write(uploaded_file.getbuffer())
+                
+                # Loading Fast AI Model
+                model = whisper.load_model("tiny")
+                
+                # Transcription Process
+                result = model.transcribe(temp_filename, fp16=False, task="transcribe")
+                
+                full_text = result["text"]
+                detected_lang = result.get("language", "unknown").upper()
+
+                # Success Celebration
+                st.balloons()
+                st.success(f"✅ Done! Language Detected: **{detected_lang}**")
+                
+                # Tabs for Organized Output
+                tab1, tab2 = st.tabs(["📄 Transcription Result", "📊 File Info"])
+                
+                with tab1:
+                    st.text_area("Original Text Content:", value=full_text, height=350)
+                    st.download_button(
+                        label="📥 Download This Transcription",
+                        data=full_text,
+                        file_name=f"{os.path.splitext(uploaded_file.name)[0]}_by_Akib.txt",
+                        mime="text/plain"
+                    )
+                
+                with tab2:
+                    st.write(f"**Filename:** {uploaded_file.name}")
+                    st.write(f"**Detected Language:** {detected_lang}")
+                    st.write(f"**AI Model:** Whisper-Tiny (Fast Mode)")
+                    st.write("**Processed by:** Akib's AI Engine")
+
+            except Exception as e:
+                st.error(f"Error: {e}")
+            
+            finally:
+                # Cleanup to keep server light
+                if os.path.exists(temp_filename):
+                    os.remove(temp_filename)
+    else:
+        st.write("")
+        st.warning("Waiting for your media file to start...")
+
+# 4. Footer
+st.write("---")
+st.markdown("<p style='text-align: center; color: grey;'>© 2026 | Designed & Developed by <b>Wasiullah</b></p>", unsafe_allow_html=True)
