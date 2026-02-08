@@ -125,4 +125,5 @@ with col2:
 
 # 4. Footer
 st.write("---")
-st.markdown("<p style='text-align: center; color: grey;'>© 2026 | Designed & Developed by <b>Wasiullah</b></p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: grey;'>© 2026 | Designed & Developed by <b>Akib</b></p>", unsafe_allow_html=True)
+
